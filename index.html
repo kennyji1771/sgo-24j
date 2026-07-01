@@ -1,1 +1,1425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SGO - 24J – Evaluación Estructural</title>
+    <!-- Bootstrap 5 (CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome (iconos) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- SheetJS para leer Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
+    </script>
+    <style>
+        body {
+            background: #f0f4f8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .form-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        .main-card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            padding: 35px 40px;
+            border: none;
+        }
 
+        /* ===== HEADER RESPONSIVE ===== */
+        .header-banner {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+            margin-bottom: 30px;
+        }
+        .header-banner .logo-wrapper {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto 10px auto;
+        }
+        .header-banner img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            display: block;
+        }
+        .header-banner h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0b2b4a;
+            letter-spacing: -0.5px;
+        }
+        .header-banner .subtitle {
+            font-size: 16px;
+            color: #6c757d;
+            font-weight: 400;
+        }
+        .badge-urgente {
+            background: #dc3545;
+            color: #fff;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 6px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0b2b4a;
+            background: #f8f9fa;
+            padding: 12px 20px;
+            border-radius: 12px;
+            border-left: 5px solid #0d6efd;
+            margin-bottom: 5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .section-title:hover {
+            background: #e9ecef;
+        }
+        .section-title i {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .accordion-button:not(.collapsed) {
+            background: #f8f9fa;
+            color: #0b2b4a;
+            box-shadow: none;
+        }
+        .accordion-button:focus {
+            box-shadow: none;
+            border-color: #dee2e6;
+        }
+        .accordion-body {
+            background: #fff;
+            padding: 20px 25px;
+        }
+        .form-label {
+            font-weight: 500;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+        .form-control,
+        .form-select {
+            border-radius: 10px;
+            border: 1.5px solid #e0e4e8;
+            padding: 10px 14px;
+            font-size: 15px;
+        }
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+        }
+        .form-check-input {
+            width: 1.2em;
+            height: 1.2em;
+            margin-top: 0.15em;
+        }
+        .form-check-label {
+            font-size: 14px;
+            color: #2c3e50;
+        }
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 25px;
+            background: #fafbfc;
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+        .checkbox-group .form-check {
+            margin-bottom: 0;
+        }
+        .btn-primary-custom {
+            background: #0b2b4a;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 35px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.2s;
+            color: #ffffff !important;
+        }
+        .btn-primary-custom:hover {
+            background: #1a3f62;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(11, 43, 74, 0.25);
+            color: #ffffff !important;
+        }
+        .btn-outline-secondary-custom {
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 500;
+        }
+        .btn-geo {
+            background: #e9ecef;
+            border-radius: 10px;
+            padding: 6px 16px;
+            font-size: 13px;
+            border: 1px solid #ced4da;
+            transition: all 0.2s;
+        }
+        .btn-geo:hover {
+            background: #dee2e6;
+        }
+        .coord-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 12px 16px;
+            border: 1px dashed #adb5bd;
+            font-size: 14px;
+            color: #495057;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 20px;
+        }
+        .coord-box span {
+            font-weight: 500;
+            color: #0b2b4a;
+        }
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        .required-star {
+            color: #dc3545;
+            margin-left: 3px;
+        }
+        .footer-version {
+            text-align: center;
+            font-size: 12px;
+            color: #adb5bd;
+            margin-top: 25px;
+            border-top: 1px solid #e9ecef;
+            padding-top: 15px;
+        }
+        /* Estilo para campos autocompletados */
+        .auto-filled {
+            background: #e8f5e9 !important;
+            border-color: #66bb6a !important;
+        }
+
+        /* ===== TRIAJE (Decisión Final) ===== */
+        #decision_final_display {
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 30px;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        .decision-verde {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+        .decision-amarillo {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
+        }
+        .decision-rojo {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #dc3545;
+        }
+        .decision-none {
+            background: #e9ecef;
+            color: #6c757d;
+            border: 2px solid #ced4da;
+        }
+
+        @media (max-width: 768px) {
+            .main-card {
+                padding: 20px;
+            }
+            .header-banner h1 {
+                font-size: 22px;
+            }
+            .accordion-body {
+                padding: 15px;
+            }
+            .checkbox-group {
+                gap: 8px 15px;
+                padding: 12px 15px;
+            }
+            .header-banner .logo-wrapper {
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <div class="main-card">
+
+            <!-- ===== HEADER CON LOGO RESPONSIVE ===== -->
+            <div class="header-banner">
+                <div class="logo-wrapper">
+                    <img src="logo.png" alt="Logo COPRE-DIG" />
+                </div>
+                <h1><i class="fas fa-building" style="color:#0d6efd;"></i> SGO - 24J – Evaluación Estructural</h1>
+                <div class="subtitle">SISMO GESTIÓN ORGANIZACIÓN · Registro de inspección de edificaciones afectadas por el terremoto del 24 de junio de 2026</div>
+                <span class="badge-urgente"><i class="fas fa-exclamation-triangle"></i> Evaluación prioritaria</span>
+            </div>
+
+            <!-- ===== MENSAJES TOAST ===== -->
+            <div class="toast-container" id="toastContainer"></div>
+
+            <!-- ===== FORMULARIO ===== -->
+            <form id="registroForm" novalidate>
+
+                <div class="accordion" id="accordionSections">
+
+                    <!-- ============================== -->
+                    <!-- SECCIÓN 1: DATOS GENERALES -->
+                    <!-- ============================== -->
+                    <div class="accordion-item border-0 mb-3">
+                        <h2 class="accordion-header" id="heading1">
+                            <button class="accordion-button section-title collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
+                                <span><i class="fas fa-calendar-alt me-2"></i>1. Datos Generales</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </h2>
+                        <div id="collapse1" class="accordion-collapse collapse show" aria-labelledby="heading1" data-bs-parent="#accordionSections">
+                            <div class="accordion-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Fecha de inspección <span class="required-star">*</span></label>
+                                        <input type="date" class="form-control" id="fecha" name="fecha" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Hora de inicio <span class="required-star">*</span></label>
+                                        <input type="time" class="form-control" id="hora" name="hora" required />
+                                    </div>
+
+                                    <!-- CASCADA GEOGRÁFICA -->
+                                    <div class="col-md-3">
+                                        <label class="form-label">Estado <span class="required-star">*</span></label>
+                                        <select class="form-select" id="zodiSelect" name="zodi" required>
+                                            <option value="">Seleccione...</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Municipio <span class="required-star">*</span></label>
+                                        <select class="form-select" id="adiSelect" name="adi" required disabled>
+                                            <option value="">Primero seleccione Estado</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Parroquia <span class="required-star">*</span></label>
+                                        <select class="form-select" id="updiSelect" name="updi" required disabled>
+                                            <option value="">Primero seleccione Municipio</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Comuna <span class="required-star">*</span></label>
+                                        <select class="form-select" id="ucdiSelect" name="ucdi" required disabled>
+                                            <option value="">Primero seleccione Parroquia</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Enlace comunal (autocompletado) -->
+                                    <div class="col-md-6">
+                                        <label class="form-label">Enlace Comunal (Nombre y Apellido)</label>
+                                        <input type="text" class="form-control" id="enlaceNombre" name="enlace_nombre" placeholder="Se autocompleta al seleccionar la comuna" readonly />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Teléfono del Enlace Comunal</label>
+                                        <input type="tel" class="form-control" id="enlaceTelefono" name="enlace_telefono" placeholder="Se autocompleta" readonly />
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Sector / Comunidad <span class="required-star">*</span></label>
+                                        <input type="text" class="form-control" id="sector" name="sector" placeholder="Ej. Urbanismo 5 Héroes Cubanos" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Cuadrante de Paz</label>
+                                        <input type="text" class="form-control" id="cuadrante" name="cuadrante" placeholder="Ej. C-12" />
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label">Ubicación Georreferencial <span class="required-star">*</span></label>
+                                        <div class="coord-box" id="coordBox">
+                                            <span><i class="fas fa-map-pin me-1"></i> Latitud: <span id="latitud">-</span></span>
+                                            <span><i class="fas fa-map-pin me-1"></i> Longitud: <span id="longitud">-</span></span>
+                                            <span><i class="fas fa-arrow-up me-1"></i> Altitud: <span id="altitud">-</span></span>
+                                            <span><i class="fas fa-bullseye me-1"></i> Precisión: <span id="precision">-</span> m</span>
+                                            <button type="button" class="btn btn-geo ms-auto" id="btnGeo"><i class="fas fa-location-dot me-1"></i> Obtener ubicación</button>
+                                        </div>
+                                        <input type="hidden" id="latitud_input" name="latitud" />
+                                        <input type="hidden" id="longitud_input" name="longitud" />
+                                        <input type="hidden" id="altitud_input" name="altitud" />
+                                        <input type="hidden" id="precision_input" name="precision" />
+                                        <div class="help-text mt-1" style="font-size:13px; color:#6c757d;">Presione "Obtener ubicación" para capturar automáticamente o ingrese manualmente en el mapa (futura fase).</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============================== -->
+                    <!-- SECCIÓN 2: DATOS DE LA INSTITUCIÓN -->
+                    <!-- ============================== -->
+                    <div class="accordion-item border-0 mb-3">
+                        <h2 class="accordion-header" id="heading2">
+                            <button class="accordion-button section-title collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                                <span><i class="fas fa-building-columns me-2"></i>2. Datos de la Institución</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </h2>
+                        <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="heading2" data-bs-parent="#accordionSections">
+                            <div class="accordion-body">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label">Nombre de la Institución o Consejo Comunal <span class="required-star">*</span></label>
+                                        <input type="text" class="form-control" id="institucion" name="institucion" placeholder="Ej. COPRE-DIG" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Representante Institucional o Comunitario <span class="required-star">*</span></label>
+                                        <input type="text" class="form-control" id="representante" name="representante" placeholder="Nombre y apellido" required />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Teléfono de contacto <span class="required-star">*</span></label>
+                                        <input type="tel" class="form-control" id="tel_institucion" name="tel_institucion" placeholder="0412-1234567" required />
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Correo electrónico</label>
+                                        <input type="email" class="form-control" id="email_institucion" name="email_institucion" placeholder="ejemplo@dominio.com" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============================== -->
+                    <!-- SECCIÓN 3: IDENTIFICACIÓN DE LA EDIFICACIÓN -->
+                    <!-- ============================== -->
+                    <div class="accordion-item border-0 mb-3">
+                        <h2 class="accordion-header" id="heading3">
+                            <button class="accordion-button section-title collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                                <span><i class="fas fa-home me-2"></i>3. Identificación de la Edificación</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </h2>
+                        <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="heading3" data-bs-parent="#accordionSections">
+                            <div class="accordion-body">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label">Nombre de la edificación <span class="required-star">*</span></label>
+                                        <input type="text" class="form-control" id="nombre_edificio" name="nombre_edificio" placeholder="Ej. Edificio 5 Héroes Cubanos" required />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Año de construcción</label>
+                                        <input type="number" class="form-control" id="ano_construccion" name="ano_construccion" placeholder="Ej. 1990" min="1900" max="2026" />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Pisos <span class="required-star">*</span></label>
+                                        <input type="number" class="form-control" id="pisos" name="pisos" min="0" value="0" required />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Sótanos</label>
+                                        <input type="number" class="form-control" id="sotanos" name="sotanos" min="0" value="0" />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Escaleras</label>
+                                        <input type="number" class="form-control" id="escaleras" name="escaleras" min="0" value="0" />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Ascensores</label>
+                                        <input type="number" class="form-control" id="ascensores" name="ascensores" min="0" value="0" />
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Familias</label>
+                                        <input type="number" class="form-control" id="familias" name="familias" min="0" value="0" />
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Personas</label>
+                                        <input type="number" class="form-control" id="personas" name="personas" min="0" value="0" />
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Trabajadores</label>
+                                        <input type="number" class="form-control" id="trabajadores" name="trabajadores" min="0" value="0" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============================== -->
+                    <!-- SECCIÓN 4: USO DE LA EDIFICACIÓN -->
+                    <!-- ============================== -->
+                    <div class="accordion-item border-0 mb-3">
+                        <h2 class="accordion-header" id="heading4">
+                            <button class="accordion-button section-title collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+                                <span><i class="fas fa-arrows-to-dot me-2"></i>4. Uso de la Edificación</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </h2>
+                        <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="heading4" data-bs-parent="#accordionSections">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="form-label">Indique el uso principal <span class="required-star">*</span></label>
+                                        <select class="form-select" id="uso_edificacion" name="uso_edificacion" required>
+                                            <option value="">Seleccione...</option>
+                                            <option value="Gubernamental">Gubernamental</option>
+                                            <option value="Bomberos">Bomberos</option>
+                                            <option value="Protección Civil">Protección Civil</option>
+                                            <option value="Policial">Policial</option>
+                                            <option value="Militar">Militar</option>
+                                            <option value="Vivienda popular">Vivienda popular</option>
+                                            <option value="Vivienda unifamiliar">Vivienda unifamiliar</option>
+                                            <option value="Vivienda multifamiliar">Vivienda multifamiliar</option>
+                                            <option value="Médico asistencial">Médico asistencial</option>
+                                            <option value="Educativo">Educativo</option>
+                                            <option value="Deportivo recreativo">Deportivo recreativo</option>
+                                            <option value="Cultural">Cultural</option>
+                                            <option value="Industrial">Industrial</option>
+                                            <option value="Comercial">Comercial</option>
+                                            <option value="Oficina">Oficina</option>
+                                            <option value="Religioso">Religioso</option>
+                                            <option value="Residencial">Residencial</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============================== -->
+                    <!-- SECCIÓN 5: TIPO DE ESTRUCTURA -->
+                    <!-- ============================== -->
+                    <div class="accordion-item border-0 mb-3">
+                        <h2 class="accordion-header" id="heading5">
+                            <button class="accordion-button section-title collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
+                                <span><i class="fas fa-layer-group me-2"></i>5. Tipo de Estructura</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </h2>
+                        <div id="collapse5" class="accordion-collapse collapse" aria-labelledby="heading5" data-bs-parent="#accordionSections">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="form-label">Seleccione el tipo estructural <span class="required-star">*</span></label>
+                                        <select class="form-select" id="tipo_estructura" name="tipo_estructura" required>
+                                            <option value="">Seleccione...</option>
+                                            <option value="Pórtico de concreto armado">Pórtico de concreto armado</option>
+                                            <option value="Pórtico de concreto armado relleno con paredes de bloque de arcilla o concreto">Pórtico de concreto armado relleno con paredes de bloque de arcilla o concreto</option>
+                                            <option value="Muros de concreto armado en dos direcciones horizontales">Muros de concreto armado en dos direcciones horizontales</option>
+                                            <option value="Sistema con muros de concreto armado de poco espesor dispuesto en una dirección">Sistema con muros de concreto armado de poco espesor dispuesto en una dirección</option>
+                                            <option value="Pórticos de acero">Pórticos de acero</option>
+                                            <option value="Pórticos de acero con perfiles tubulares">Pórticos de acero con perfiles tubulares</option>
+                                            <option value="Pórtico de aceros diagonalizados">Pórtico de aceros diagonalizados</option>
+                                            <option value="Pórtico de acero con cerchas">Pórtico de acero con cerchas</option>
+                                            <option value="Sistema prefabricado a base de grandes paneles o depósito">Sistema prefabricado a base de grandes paneles o depósito</option>
+                                            <option value="Muro de mampostería confinada">Muro de mampostería confinada</option>
+                                            <option value="Muro de mampostería no confinada">Muro de mampostería no confinada</option>
+                                            <option value="Sistema mixto de pórtico y mampostería de baja calidad (menor a 2 pisos)">Sistema mixto de pórtico y mampostería de baja calidad (menor a 2 pisos)</option>
+                                            <option value="Sistema mixto de pórtico y mampostería de baja calidad (mayor a 2 pisos)">Sistema mixto de pórtico y mampostería de baja calidad (mayor a 2 pisos)</option>
+                                            <option value="Vivienda de Bahareque de un piso">Vivienda de Bahareque de un piso</option>
+                                            <option value="Construcción precaria (tierra, madera, sin entre otros)">Construcción precaria (tierra, madera, sin entre otros)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============================== -->
+                    <!-- SECCIÓN 6: INSPECCIÓN EXTERNA -->
+                    <!-- ============================== -->
+                    <div class="accordion-item border-0 mb-3">
+                        <h2 class="accordion-header" id="heading6">
+                            <button class="accordion-button section-title collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
+                                <span><i class="fas fa-search me-2"></i>6. Inspección Externa (sin acceder)</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </h2>
+                        <div id="collapse6" class="accordion-collapse collapse" aria-labelledby="heading6" data-bs-parent="#accordionSections">
+                            <div class="accordion-body">
+                                <label class="form-label">Seleccione las condiciones observadas <span class="required-star">*</span></label>
+                                <div class="checkbox-group" id="inspeccion_externa">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="inspeccion_externa" value="Colapso de la estructura" id="ins_colapso" /><label class="form-check-label" for="ins_colapso">Colapso de la estructura</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="inspeccion_externa" value="Riesgo de edificios aledaños" id="ins_riesgo" /><label class="form-check-label" for="ins_riesgo">Riesgo de edificios aledaños</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="inspeccion_externa" value="Amenaza geológica" id="ins_geologica" /><label class="form-check-label" for="ins_geologica">Amenaza geológica</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="inspeccion_externa" value="Asentamiento del edificio" id="ins_asentamiento" /><label class="form-check-label" for="ins_asentamiento">Asentamiento del edificio</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="inspeccion_externa" value="Inclinación de edificio" id="ins_inclinacion" /><label class="form-check-label" for="ins_inclinacion">Inclinación de edificio</label></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============================== -->
+                    <!-- SECCIÓN 7: ESQUEMA DE PLANTA Y ELEVACIÓN -->
+                    <!-- ============================== -->
+                    <div class="accordion-item border-0 mb-3">
+                        <h2 class="accordion-header" id="heading7">
+                            <button class="accordion-button section-title collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse7" aria-expanded="false" aria-controls="collapse7">
+                                <span><i class="fas fa-vector-square me-2"></i>7. Esquema de Planta y Elevación</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </h2>
+                        <div id="collapse7" class="accordion-collapse collapse" aria-labelledby="heading7" data-bs-parent="#accordionSections">
+                            <div class="accordion-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Esquema de planta <span class="required-star">*</span></label>
+                                        <select class="form-select" id="esquema_planta" name="esquema_planta" required>
+                                            <option value="">Seleccione...</option>
+                                            <option value="H">"H"</option>
+                                            <option value="T">"T"</option>
+                                            <option value="U o C">"U" o "C"</option>
+                                            <option value="L">"L"</option>
+                                            <option value="Cajón">Cajón</option>
+                                            <option value="Regular">Regular</option>
+                                            <option value="Esbeltez horizontal">Esbeltez horizontal</option>
+                                            <option value="Ninguno">Ninguno</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Esquema de elevación <span class="required-star">*</span></label>
+                                        <select class="form-select" id="esquema_elevacion" name="esquema_elevacion" required>
+                                            <option value="">Seleccione...</option>
+                                            <option value="T">"T"</option>
+                                            <option value="Pirámide invertida">Pirámide invertida</option>
+                                            <option value="Piramidal">Piramidal</option>
+                                            <option value="U">"U"</option>
+                                            <option value="L">"L"</option>
+                                            <option value="Rectangular">Rectangular</option>
+                                            <option value="Esbeltez vertical">Esbeltez vertical</option>
+                                            <option value="Ninguno">Ninguno</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============================== -->
+                    <!-- SECCIÓN 8: IRREGULARIDADES -->
+                    <!-- ============================== -->
+                    <div class="accordion-item border-0 mb-3">
+                        <h2 class="accordion-header" id="heading8">
+                            <button class="accordion-button section-title collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse8" aria-expanded="false" aria-controls="collapse8">
+                                <span><i class="fas fa-bolt me-2"></i>8. Irregularidades</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </h2>
+                        <div id="collapse8" class="accordion-collapse collapse" aria-labelledby="heading8" data-bs-parent="#accordionSections">
+                            <div class="accordion-body">
+                                <label class="form-label">Seleccione las irregularidades presentes <span class="required-star">*</span></label>
+                                <div class="checkbox-group" id="irregularidades">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Ausencia de vigas altas en una o dos direcciones" id="irr_vigas" /><label class="form-check-label" for="irr_vigas">Ausencia de vigas altas en una o dos direcciones</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Ausencia de muros en una dirección" id="irr_muros" /><label class="form-check-label" for="irr_muros">Ausencia de muros en una dirección</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Estructura frágil" id="irr_fragil" /><label class="form-check-label" for="irr_fragil">Estructura frágil</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Presencia de al menos un entrepiso débil o blando" id="irr_entrepiso" /><label class="form-check-label" for="irr_entrepiso">Entrepiso débil o blando</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Presencia de columnas cortas" id="irr_columnas" /><label class="form-check-label" for="irr_columnas">Presencia de columnas cortas</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Discontinuidad de ejes de columnas o paredes portantes" id="irr_discontinuidad" /><label class="form-check-label" for="irr_discontinuidad">Discontinuidad de ejes de columnas o paredes portantes</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Aberturas significativas en losas" id="irr_losas" /><label class="form-check-label" for="irr_losas">Aberturas significativas en losas</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Fuerte asimetría de masas o rigidez en planta" id="irr_asimetria" /><label class="form-check-label" for="irr_asimetria">Asimetría de masas o rigidez en planta</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Adosamiento: Losa contra losa" id="irr_adosa_losa" /><label class="form-check-label" for="irr_adosa_losa">Adosamiento: Losa contra losa</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Adosamiento: Losa contra columna" id="irr_adosa_columna" /><label class="form-check-label" for="irr_adosa_columna">Adosamiento: Losa contra columna</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Grietas en paredes" id="irr_grietas_pared" /><label class="form-check-label" for="irr_grietas_pared">Grietas en paredes</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Grietas en vigas" id="irr_grietas_viga" /><label class="form-check-label" for="irr_grietas_viga">Grietas en vigas</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Exposición de cabillas" id="irr_cabillas" /><label class="form-check-label" for="irr_cabillas">Exposición de cabillas</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Grietas en piso" id="irr_grietas_piso" /><label class="form-check-label" for="irr_grietas_piso">Grietas en piso</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Deformación en marcos de puertas" id="irr_puertas" /><label class="form-check-label" for="irr_puertas">Deformación en marcos de puertas</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Agrietamientos en elementos estructurales" id="irr_agrietamientos" /><label class="form-check-label" for="irr_agrietamientos">Agrietamientos en elementos estructurales</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Separación entre edificios (cm)" id="irr_separacion" /><label class="form-check-label" for="irr_separacion">Separación entre edificios</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Ausencia de columna" id="irr_columna" /><label class="form-check-label" for="irr_columna">Ausencia de columna</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Filtración" id="irr_filtracion" /><label class="form-check-label" for="irr_filtracion">Filtración</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Desprendimiento de baldosas" id="irr_baldosas" /><label class="form-check-label" for="irr_baldosas">Desprendimiento de baldosas</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Abombamiento de pisos" id="irr_abombamiento" /><label class="form-check-label" for="irr_abombamiento">Abombamiento de pisos</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Puerta de vidrio colapsada" id="irr_vidrio" /><label class="form-check-label" for="irr_vidrio">Puerta de vidrio colapsada</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="irregularidades" value="Alto nivel freatico" id="irr_freatico" /><label class="form-check-label" for="irr_freatico">Alto nivel freático</label></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============================== -->
+                    <!-- SECCIÓN 9: DAÑOS EN ELEMENTOS NO ESTRUCTURALES -->
+                    <!-- ============================== -->
+                    <div class="accordion-item border-0 mb-3">
+                        <h2 class="accordion-header" id="heading9">
+                            <button class="accordion-button section-title collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse9" aria-expanded="false" aria-controls="collapse9">
+                                <span><i class="fas fa-hammer me-2"></i>9. Daños en Elementos no Estructurales</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </h2>
+                        <div id="collapse9" class="accordion-collapse collapse" aria-labelledby="heading9" data-bs-parent="#accordionSections">
+                            <div class="accordion-body">
+                                <label class="form-label">Seleccione los elementos afectados <span class="required-star">*</span></label>
+                                <div class="checkbox-group" id="danos_no_estructurales">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="danos_no_estructurales" value="Paredes / tabiquería" id="dno_paredes" /><label class="form-check-label" for="dno_paredes">Paredes / tabiquería</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="danos_no_estructurales" value="Escaleras" id="dno_escaleras" /><label class="form-check-label" for="dno_escaleras">Escaleras</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="danos_no_estructurales" value="Tanques / balcones" id="dno_tanques" /><label class="form-check-label" for="dno_tanques">Tanques / balcones</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="danos_no_estructurales" value="Fachada / cielo raso / letreros / maquinaria / otros" id="dno_fachada" /><label class="form-check-label" for="dno_fachada">Fachada / cielo raso / letreros / maquinaria / otros</label></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============================== -->
+                    <!-- SECCIÓN 10: AFECTACIÓN DE SERVICIOS BÁSICOS -->
+                    <!-- ============================== -->
+                    <div class="accordion-item border-0 mb-3">
+                        <h2 class="accordion-header" id="heading10">
+                            <button class="accordion-button section-title collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse10" aria-expanded="false" aria-controls="collapse10">
+                                <span><i class="fas fa-plug me-2"></i>10. Afectación de Servicios Básicos</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </h2>
+                        <div id="collapse10" class="accordion-collapse collapse" aria-labelledby="heading10" data-bs-parent="#accordionSections">
+                            <div class="accordion-body">
+                                <!-- Eléctrico -->
+                                <label class="form-label fw-bold">Sistema eléctrico <span class="required-star">*</span></label>
+                                <div class="checkbox-group mb-3" id="servicio_electrico">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="servicio_electrico" value="No cumple norma COVENIN 200" id="ele_covenin" /><label class="form-check-label" for="ele_covenin">No cumple norma COVENIN 200</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="servicio_electrico" value="Irregularidad en tableros" id="ele_tableros" /><label class="form-check-label" for="ele_tableros">Irregularidad en tableros</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="servicio_electrico" value="Conexiones irregulares" id="ele_conexiones" /><label class="form-check-label" for="ele_conexiones">Conexiones irregulares</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="servicio_electrico" value="Desconexiones" id="ele_desconexiones" /><label class="form-check-label" for="ele_desconexiones">Desconexiones</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="servicio_electrico" value="Falta del servicio" id="ele_falta" /><label class="form-check-label" for="ele_falta">Falta del servicio</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="servicio_electrico" value="Ninguna de las anteriores" id="ele_ninguna" /><label class="form-check-label" for="ele_ninguna">Ninguna de las anteriores</label></div>
+                                </div>
+
+                                <!-- Aguas blancas -->
+                                <label class="form-label fw-bold">Sistema de aguas blancas <span class="required-star">*</span></label>
+                                <div class="checkbox-group mb-3" id="servicio_aguas">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="servicio_aguas" value="Rotura de tuberías" id="agua_rotura" /><label class="form-check-label" for="agua_rotura">Rotura de tuberías</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="servicio_aguas" value="Conexiones deterioradas" id="agua_conexiones" /><label class="form-check-label" for="agua_conexiones">Conexiones deterioradas</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="servicio_aguas" value="Tuberías corroidas" id="agua_corroidas" /><label class="form-check-label" for="agua_corroidas">Tuberías corroidas</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="servicio_aguas" value="Falta del servicio" id="agua_falta" /><label class="form-check-label" for="agua_falta">Falta del servicio</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="servicio_aguas" value="Acometidas improvisadas" id="agua_acometidas" /><label class="form-check-label" for="agua_acometidas">Acometidas improvisadas</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="servicio_aguas" value="Ninguna de las anteriores" id="agua_ninguna" /><label class="form-check-label" for="agua_ninguna">Ninguna de las anteriores</label></div>
+                                </div>
+
+                                <!-- Gas -->
+                                <label class="form-label fw-bold">Sistema de gas licuado de petróleo (GLP) <span class="required-star">*</span></label>
+                                <div class="checkbox-group" id="servicio_gas">
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="servicio_gas" value="Tuberías en mal estado" id="gas_tuberias" /><label class="form-check-label" for="gas_tuberias">Tuberías en mal estado</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="servicio_gas" value="Válvulas dañadas" id="gas_valvulas" /><label class="form-check-label" for="gas_valvulas">Válvulas dañadas</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="servicio_gas" value="Bombonas defectuosas" id="gas_bombonas" /><label class="form-check-label" for="gas_bombonas">Bombonas defectuosas</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="servicio_gas" value="Tanques fijos deteriorados" id="gas_tanques" /><label class="form-check-label" for="gas_tanques">Tanques fijos deteriorados</label></div>
+                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="servicio_gas" value="Ninguna de las anteriores" id="gas_ninguna" /><label class="form-check-label" for="gas_ninguna">Ninguna de las anteriores</label></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============================== -->
+                    <!-- SECCIÓN 11: DECISIÓN FINAL (AUTOMÁTICA) -->
+                    <!-- ============================== -->
+                    <div class="accordion-item border-0 mb-3">
+                        <h2 class="accordion-header" id="heading11">
+                            <button class="accordion-button section-title collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse11" aria-expanded="false" aria-controls="collapse11">
+                                <span><i class="fas fa-flag-checkered me-2"></i>11. Decisión Final (Automática)</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </h2>
+                        <div id="collapse11" class="accordion-collapse collapse" aria-labelledby="heading11" data-bs-parent="#accordionSections">
+                            <div class="accordion-body">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label">Nivel de riesgo más desfavorable (calculado automáticamente) <span class="required-star">*</span></label>
+                                        <div id="decision_final_display" class="decision-none">
+                                            <i class="fas fa-sync-alt fa-spin me-2"></i> Evaluando condiciones...
+                                        </div>
+                                        <input type="hidden" id="decision_final" name="decision_final" value="" />
+                                        <div class="help-text mt-1" style="font-size:13px; color:#6c757d;">
+                                            Este campo se calcula automáticamente según las condiciones seleccionadas en las secciones anteriores.
+                                            <ul class="mt-1 mb-0" style="font-size:13px; padding-left:20px;">
+                                                <li><strong class="text-success">Verde</strong> – Sin condiciones críticas o daños menores.</li>
+                                                <li><strong class="text-warning">Amarillo</strong> – Riesgo medio: se recomienda restringir el acceso.</li>
+                                                <li><strong class="text-danger">Rojo</strong> – Riesgo alto: acceso no permitido, peligro inminente.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Observaciones adicionales</label>
+                                        <textarea class="form-control" id="observaciones" name="observaciones" rows="3" placeholder="Detalles adicionales sobre la inspección..."></textarea>
+                                        <div class="help-text mt-1" style="font-size:13px; color:#6c757d;">Máximo 300 caracteres.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============================== -->
+                    <!-- SECCIÓN 12: NOMBRE DEL RESPONSABLE -->
+                    <!-- ============================== -->
+                    <div class="accordion-item border-0 mb-3">
+                        <h2 class="accordion-header" id="heading12">
+                            <button class="accordion-button section-title collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse12" aria-expanded="false" aria-controls="collapse12">
+                                <span><i class="fas fa-user me-2"></i>12. Nombre del Responsable</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </h2>
+                        <div id="collapse12" class="accordion-collapse collapse" aria-labelledby="heading12" data-bs-parent="#accordionSections">
+                            <div class="accordion-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Nombre del responsable <span class="required-star">*</span></label>
+                                        <input type="text" class="form-control" id="responsable_nombre" name="responsable_nombre" placeholder="Nombre y apellido" required />
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Cédula <span class="required-star">*</span></label>
+                                        <input type="text" class="form-control" id="responsable_cedula" name="responsable_cedula" placeholder="12345678" required />
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Teléfono <span class="required-star">*</span></label>
+                                        <input type="tel" class="form-control" id="responsable_telefono" name="responsable_telefono" placeholder="0412-1234567" required />
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">Organismo que representa <span class="required-star">*</span></label>
+                                        <input type="text" class="form-control" id="responsable_organismo" name="responsable_organismo" placeholder="Ej. COPRE-DIG, alcaldía, consejo comunal" required />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============================== -->
+                    <!-- SECCIÓN 13: ANEXO DIGITAL (placeholder) -->
+                    <!-- ============================== -->
+                    <div class="accordion-item border-0 mb-3">
+                        <h2 class="accordion-header" id="heading13">
+                            <button class="accordion-button section-title collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse13" aria-expanded="false" aria-controls="collapse13">
+                                <span><i class="fas fa-camera me-2"></i>13. Anexo Digital <span class="badge bg-secondary ms-2">Próxima fase</span></span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </h2>
+                        <div id="collapse13" class="accordion-collapse collapse" aria-labelledby="heading13" data-bs-parent="#accordionSections">
+                            <div class="accordion-body text-muted" style="font-size:14px;">
+                                <p><i class="fas fa-info-circle me-1"></i> Esta sección estará disponible en una futura actualización para adjuntar fotos y videos de la inspección.</p>
+                                <p><strong>Por ahora, complete los datos estructurales y envíe el formulario.</strong></p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div> <!-- fin accordion -->
+
+                <!-- ===== BOTONES DE ACCIÓN ===== -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center mt-4 pt-3 border-top">
+                    <div>
+                        <button type="button" class="btn btn-outline-secondary btn-outline-secondary-custom" id="btnLimpiar">
+                            <i class="fas fa-eraser me-1"></i> Limpiar
+                        </button>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary-custom">
+                            <i class="fas fa-paper-plane me-2"></i> Enviar inspección
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+
+            <!-- ===== FOOTER ===== -->
+            <div class="footer-version">
+                <i class="fas fa-code-branch me-1"></i> SGO - 24J – Evaluación Estructural v1.1 &bull; Con semáforo automático
+            </div>
+
+        </div> <!-- fin main-card -->
+    </div> <!-- fin form-container -->
+
+    <!-- ================================================================ -->
+    <!-- Bootstrap JS y dependencias -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+    <script>
+        // ================================================================
+        // CONFIGURACIÓN
+        // ================================================================
+        const EXCEL_FILE = 'ODDI - REG.xlsx';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwJupvkLoQ2WHoyyCdwrdpssLe1T_GXAJWtwn8nwIB7GrOYW58H_U_PrxNEzepaJhx6/exec'; // <-- CAMBIAR
+
+        let geoData = [];
+
+        // ================================================================
+        // CARGA DEL EXCEL
+        // ================================================================
+        async function loadExcelData() {
+            try {
+                const response = await fetch(EXCEL_FILE);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const buffer = await response.arrayBuffer();
+                const workbook = XLSX.read(buffer, { type: 'array' });
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                geoData = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+                console.log(`✅ Cargados ${geoData.length} registros.`);
+                populateSelect('zodiSelect', geoData, 'ZODI');
+
+                setTimeout(() => {
+                    const selZ = document.getElementById('zodiSelect');
+                    if (selZ.options.length > 1) {
+                        selZ.value = 'GDC';
+                        selZ.dispatchEvent(new Event('change'));
+                        setTimeout(() => {
+                            const selA = document.getElementById('adiSelect');
+                            if (selA.options.length > 1) {
+                                selA.value = 'LIBERTADOR';
+                                selA.dispatchEvent(new Event('change'));
+                                setTimeout(() => {
+                                    const selU = document.getElementById('updiSelect');
+                                    if (selU.options.length > 1) {
+                                        selU.value = 'SAN AGUSTIN';
+                                        selU.dispatchEvent(new Event('change'));
+                                    }
+                                }, 100);
+                            }
+                        }, 100);
+                    }
+                }, 200);
+
+            } catch (error) {
+                console.error('❌ Error al cargar el Excel:', error);
+                mostrarToast('No se pudo cargar el archivo de ubicaciones. Verifique la conexión.', 'danger');
+            }
+        }
+
+        function populateSelect(selectId, data, column, filter = null) {
+            const select = document.getElementById(selectId);
+            const values = data
+                .filter(row => filter ? row[filter.field] === filter.value : true)
+                .map(row => row[column])
+                .filter(v => v && v.trim() !== '')
+                .filter((v, i, arr) => arr.indexOf(v) === i)
+                .sort();
+
+            select.innerHTML = '<option value="">Seleccione...</option>';
+            values.forEach(val => {
+                const opt = document.createElement('option');
+                opt.value = val;
+                opt.textContent = val;
+                select.appendChild(opt);
+            });
+            select.disabled = false;
+        }
+
+        function filterData(conditions) {
+            return geoData.filter(row => {
+                for (let key in conditions) {
+                    if (row[key] !== conditions[key]) return false;
+                }
+                return true;
+            });
+        }
+
+        function findEnlace(conditions) {
+            return geoData.find(row => {
+                for (let key in conditions) {
+                    if (row[key] !== conditions[key]) return false;
+                }
+                return true;
+            }) || null;
+        }
+
+        // ================================================================
+        // CASCADA GEOGRÁFICA + AUTOCOMPLETADO
+        // ================================================================
+        document.getElementById('zodiSelect').addEventListener('change', function() {
+            const zodi = this.value;
+            const adiSelect = document.getElementById('adiSelect');
+            const updiSelect = document.getElementById('updiSelect');
+            const ucdiSelect = document.getElementById('ucdiSelect');
+
+            updiSelect.innerHTML = '<option value="">Primero seleccione Municipio</option>';
+            updiSelect.disabled = true;
+            ucdiSelect.innerHTML = '<option value="">Primero seleccione Parroquia</option>';
+            ucdiSelect.disabled = true;
+            document.getElementById('enlaceNombre').value = '';
+            document.getElementById('enlaceTelefono').value = '';
+
+            if (!zodi) {
+                adiSelect.innerHTML = '<option value="">Primero seleccione Estado</option>';
+                adiSelect.disabled = true;
+                return;
+            }
+            const filtered = filterData({ ZODI: zodi });
+            populateSelect('adiSelect', filtered, 'ADI');
+        });
+
+        document.getElementById('adiSelect').addEventListener('change', function() {
+            const adi = this.value;
+            const zodi = document.getElementById('zodiSelect').value;
+            const updiSelect = document.getElementById('updiSelect');
+            const ucdiSelect = document.getElementById('ucdiSelect');
+
+            ucdiSelect.innerHTML = '<option value="">Primero seleccione Parroquia</option>';
+            ucdiSelect.disabled = true;
+            document.getElementById('enlaceNombre').value = '';
+            document.getElementById('enlaceTelefono').value = '';
+
+            if (!adi || !zodi) {
+                updiSelect.innerHTML = '<option value="">Primero seleccione Municipio</option>';
+                updiSelect.disabled = true;
+                return;
+            }
+            const filtered = filterData({ ZODI: zodi, ADI: adi });
+            populateSelect('updiSelect', filtered, 'UPDI');
+        });
+
+        document.getElementById('updiSelect').addEventListener('change', function() {
+            const updi = this.value;
+            const zodi = document.getElementById('zodiSelect').value;
+            const adi = document.getElementById('adiSelect').value;
+            const ucdiSelect = document.getElementById('ucdiSelect');
+
+            document.getElementById('enlaceNombre').value = '';
+            document.getElementById('enlaceTelefono').value = '';
+
+            if (!updi || !adi || !zodi) {
+                ucdiSelect.innerHTML = '<option value="">Primero seleccione Parroquia</option>';
+                ucdiSelect.disabled = true;
+                return;
+            }
+            const filtered = filterData({ ZODI: zodi, ADI: adi, UPDI: updi });
+            populateSelect('ucdiSelect', filtered, 'UCDI');
+        });
+
+        document.getElementById('ucdiSelect').addEventListener('change', function() {
+            const ucdi = this.value;
+            const zodi = document.getElementById('zodiSelect').value;
+            const adi = document.getElementById('adiSelect').value;
+            const updi = document.getElementById('updiSelect').value;
+
+            if (!ucdi || !updi || !adi || !zodi) {
+                document.getElementById('enlaceNombre').value = '';
+                document.getElementById('enlaceTelefono').value = '';
+                return;
+            }
+
+            const enlace = findEnlace({ ZODI: zodi, ADI: adi, UPDI: updi, UCDI: ucdi });
+            if (enlace) {
+                document.getElementById('enlaceNombre').value = enlace['ENLACE-NOMBRE Y APELLIDO'] || '';
+                document.getElementById('enlaceTelefono').value = enlace['ENLACE-TELEFONO'] || '';
+                document.getElementById('enlaceNombre').classList.add('auto-filled');
+                document.getElementById('enlaceTelefono').classList.add('auto-filled');
+            } else {
+                document.getElementById('enlaceNombre').value = '';
+                document.getElementById('enlaceTelefono').value = '';
+                document.getElementById('enlaceNombre').classList.remove('auto-filled');
+                document.getElementById('enlaceTelefono').classList.remove('auto-filled');
+                mostrarToast('⚠️ No hay enlace registrado para esta comuna.', 'warning');
+            }
+        });
+
+        // ================================================================
+        // GEOLOCALIZACIÓN
+        // ================================================================
+        document.getElementById('btnGeo').addEventListener('click', function() {
+            if (!navigator.geolocation) {
+                mostrarToast('Geolocalización no soportada en este navegador.', 'warning');
+                return;
+            }
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Obteniendo...';
+            navigator.geolocation.getCurrentPosition(
+                function(pos) {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    const alt = pos.coords.altitude || 'N/A';
+                    const acc = pos.coords.accuracy || 'N/A';
+                    document.getElementById('latitud').textContent = lat.toFixed(6);
+                    document.getElementById('longitud').textContent = lon.toFixed(6);
+                    document.getElementById('altitud').textContent = alt === 'N/A' ? '-' : alt.toFixed(1);
+                    document.getElementById('precision').textContent = acc === 'N/A' ? '-' : acc.toFixed(0);
+                    document.getElementById('latitud_input').value = lat;
+                    document.getElementById('longitud_input').value = lon;
+                    document.getElementById('altitud_input').value = alt;
+                    document.getElementById('precision_input').value = acc;
+                    mostrarToast('✅ Ubicación capturada correctamente.', 'success');
+                    document.getElementById('btnGeo').disabled = false;
+                    document.getElementById('btnGeo').innerHTML = '<i class="fas fa-location-dot me-1"></i> Obtener ubicación';
+                },
+                function(err) {
+                    mostrarToast('❌ Error al obtener ubicación: ' + err.message, 'danger');
+                    document.getElementById('btnGeo').disabled = false;
+                    document.getElementById('btnGeo').innerHTML = '<i class="fas fa-location-dot me-1"></i> Obtener ubicación';
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 0
+                }
+            );
+        });
+
+        // ================================================================
+        // AUTOMATIZACIÓN DE DECISIÓN FINAL (SEMÁFORO)
+        // ================================================================
+        function calcularDecisionFinal() {
+            // Obtener todos los checkboxes relevantes
+            const inspeccionExterna = document.querySelectorAll('#inspeccion_externa input[type="checkbox"]:checked');
+            const irregularidades = document.querySelectorAll('#irregularidades input[type="checkbox"]:checked');
+            const danosNoEstructurales = document.querySelectorAll('#danos_no_estructurales input[type="checkbox"]:checked');
+
+            // Extraer valores
+            const inspeccionValues = Array.from(inspeccionExterna).map(cb => cb.value);
+            const irregularidadValues = Array.from(irregularidades).map(cb => cb.value);
+            const danosValues = Array.from(danosNoEstructurales).map(cb => cb.value);
+
+            // ===== REGLAS =====
+            // ROJO (prioridad máxima)
+            const condicionesRojas = [
+                'Colapso de la estructura',
+                'Amenaza geológica',
+                'Inclinación de edificio',
+                'Estructura frágil',
+                'Discontinuidad de ejes de columnas o paredes portantes',
+                'Agrietamientos en elementos estructurales',
+                'Ausencia de columna',
+                'Puerta de vidrio colapsada',
+                'Alto nivel freatico',
+                'Filtración',
+                'Grietas en vigas' // si está combinado con otros
+            ];
+
+            // AMARILLO (prioridad media)
+            const condicionesAmarillas = [
+                'Riesgo de edificios aledaños',
+                'Asentamiento del edificio',
+                'Ausencia de vigas altas en una o dos direcciones',
+                'Ausencia de muros en una dirección',
+                'Presencia de al menos un entrepiso débil o blando',
+                'Presencia de columnas cortas',
+                'Aberturas significativas en losas',
+                'Adosamiento: Losa contra losa',
+                'Adosamiento: Losa contra columna',
+                'Exposición de cabillas',
+                'Grietas en paredes',
+                'Deformación en marcos de puertas',
+                'Separación entre edificios (cm)',
+                'Filtración' // si no hay rojos
+            ];
+
+            // VERDE (sin condiciones críticas)
+            // Si no hay rojos ni amarillos, es verde.
+
+            // Evaluar ROJO
+            let esRojo = false;
+            for (let cond of condicionesRojas) {
+                // Para "Grietas en vigas" solo si hay otras rojas o si hay también "Grietas en paredes" y "Filtración"
+                if (cond === 'Grietas en vigas' || cond === 'Filtración') {
+                    // Solo rojo si hay más de una condición grave combinada
+                    let rojasGraves = irregularidadValues.filter(v =>
+                        ['Estructura frágil', 'Discontinuidad de ejes de columnas o paredes portantes',
+                            'Agrietamientos en elementos estructurales', 'Ausencia de columna',
+                            'Puerta de vidrio colapsada', 'Alto nivel freatico'
+                        ].includes(v)
+                    );
+                    if (irregularidadValues.includes('Grietas en vigas') && rojasGraves.length > 0) {
+                        esRojo = true;
+                        break;
+                    }
+                    if (irregularidadValues.includes('Filtración') && rojasGraves.length > 1) {
+                        esRojo = true;
+                        break;
+                    }
+                    continue;
+                }
+                if (irregularidadValues.includes(cond) || inspeccionValues.includes(cond)) {
+                    esRojo = true;
+                    break;
+                }
+            }
+
+            // Si no es rojo, evaluar AMARILLO
+            let esAmarillo = false;
+            if (!esRojo) {
+                for (let cond of condicionesAmarillas) {
+                    if (irregularidadValues.includes(cond) || inspeccionValues.includes(cond)) {
+                        esAmarillo = true;
+                        break;
+                    }
+                }
+                // Si hay daños no estructurales pero no rojos ni amarillos, es verde (no cambia)
+            }
+
+            // Determinar resultado
+            let resultado = '';
+            let claseCss = '';
+            let texto = '';
+
+            if (esRojo) {
+                resultado = 'Rojo - Acceso no permitido';
+                claseCss = 'decision-rojo';
+                texto = '🔴 ROJO – Acceso no permitido (peligro inminente)';
+            } else if (esAmarillo) {
+                resultado = 'Amarillo - Acceso restringido';
+                claseCss = 'decision-amarillo';
+                texto = '🟡 AMARILLO – Acceso restringido (precaución)';
+            } else {
+                resultado = 'Verde - Acceso permitido';
+                claseCss = 'decision-verde';
+                texto = '🟢 VERDE – Acceso permitido (sin riesgo crítico)';
+            }
+
+            // Actualizar el display
+            const display = document.getElementById('decision_final_display');
+            display.textContent = texto;
+            display.className = claseCss;
+
+            // Actualizar el campo oculto
+            document.getElementById('decision_final').value = resultado;
+
+            // Si hay observaciones, no las borramos
+        }
+
+        // ================================================================
+        // ASOCIAR EVENTOS A TODOS LOS CHECKBOXES RELEVANTES
+        // ================================================================
+        function vincularEventosDecision() {
+            // Seleccionar todos los checkboxes de las secciones relevantes
+            const checkboxes = document.querySelectorAll(
+                '#inspeccion_externa input[type="checkbox"], ' +
+                '#irregularidades input[type="checkbox"], ' +
+                '#danos_no_estructurales input[type="checkbox"]'
+            );
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', calcularDecisionFinal);
+            });
+
+            // También si se selecciona "Ninguna de las anteriores" en servicios, no afecta la decisión
+            // pero podemos recalcular por si acaso
+            const serviciosCheckboxes = document.querySelectorAll(
+                '#servicio_electrico input[type="checkbox"], ' +
+                '#servicio_aguas input[type="checkbox"], ' +
+                '#servicio_gas input[type="checkbox"]'
+            );
+            serviciosCheckboxes.forEach(cb => {
+                cb.addEventListener('change', calcularDecisionFinal);
+            });
+
+            // Ejecutar una vez para establecer el estado inicial
+            setTimeout(calcularDecisionFinal, 500);
+        }
+
+        // ================================================================
+        // ENVÍO DEL FORMULARIO (actualizado con decisión automática)
+        // ================================================================
+        document.getElementById('registroForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Asegurar que la decisión final esté calculada antes de enviar
+            calcularDecisionFinal();
+
+            const form = this;
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                if (key.endsWith('[]')) {
+                    const cleanKey = key.replace('[]', '');
+                    if (!data[cleanKey]) data[cleanKey] = [];
+                    data[cleanKey].push(value);
+                } else {
+                    data[key] = value;
+                }
+            });
+
+            // Validar campos obligatorios
+            const requiredFields = ['fecha', 'hora', 'zodi', 'adi', 'updi', 'ucdi', 'sector',
+                'institucion', 'representante', 'tel_institucion', 'nombre_edificio',
+                'pisos', 'uso_edificacion', 'tipo_estructura', 'esquema_planta',
+                'esquema_elevacion', 'responsable_nombre', 'responsable_cedula',
+                'responsable_telefono', 'responsable_organismo'
+            ];
+            for (let field of requiredFields) {
+                if (!data[field] || data[field].trim() === '') {
+                    mostrarToast(`❌ El campo "${field}" es obligatorio.`, 'danger');
+                    return;
+                }
+            }
+
+            // Validar geolocalización
+            if (!data.latitud || !data.longitud) {
+                mostrarToast('⚠️ Se recomienda capturar la ubicación georreferencial.', 'warning');
+            }
+
+            // Normalizar teléfonos
+            const phoneFields = ['tel_institucion', 'responsable_telefono', 'enlace_telefono'];
+            phoneFields.forEach(f => {
+                if (data[f]) {
+                    let cleaned = data[f].replace(/[^0-9+]/g, '');
+                    if (cleaned.startsWith('0')) cleaned = '+58' + cleaned.substring(1);
+                    else if (!cleaned.startsWith('+')) {
+                        if (cleaned.startsWith('58')) cleaned = '+' + cleaned;
+                        else cleaned = '+58' + cleaned;
+                    }
+                    data[f] = cleaned;
+                }
+            });
+
+            // Procesar checkboxes
+            const checkboxFields = ['inspeccion_externa', 'irregularidades', 'danos_no_estructurales',
+                'servicio_electrico', 'servicio_aguas', 'servicio_gas'
+            ];
+            checkboxFields.forEach(f => {
+                if (data[f] && Array.isArray(data[f])) {
+                    data[f] = data[f].join(', ');
+                } else {
+                    data[f] = '';
+                }
+            });
+
+            // La decisión final ya está en data.decision_final (hidden) gracias a calcularDecisionFinal
+
+            // Construir payload
+            const payload = {
+                timestamp: new Date().toISOString(),
+                fecha: data.fecha,
+                hora: data.hora,
+                zodi: data.zodi,
+                adi: data.adi,
+                updi: data.updi,
+                ucdi: data.ucdi,
+                enlace_nombre: data.enlace_nombre || '',
+                enlace_telefono: data.enlace_telefono || '',
+                sector: data.sector || '',
+                cuadrante: data.cuadrante || '',
+                latitud: data.latitud || '',
+                longitud: data.longitud || '',
+                altitud: data.altitud || '',
+                precision: data.precision || '',
+                institucion: data.institucion,
+                representante: data.representante,
+                tel_institucion: data.tel_institucion,
+                email_institucion: data.email_institucion || '',
+                nombre_edificio: data.nombre_edificio,
+                ano_construccion: data.ano_construccion || '',
+                pisos: data.pisos || 0,
+                sotanos: data.sotanos || 0,
+                escaleras: data.escaleras || 0,
+                ascensores: data.ascensores || 0,
+                familias: data.familias || 0,
+                personas: data.personas || 0,
+                trabajadores: data.trabajadores || 0,
+                uso_edificacion: data.uso_edificacion,
+                tipo_estructura: data.tipo_estructura,
+                inspeccion_externa: data.inspeccion_externa || '',
+                esquema_planta: data.esquema_planta,
+                esquema_elevacion: data.esquema_elevacion,
+                irregularidades: data.irregularidades || '',
+                danos_no_estructurales: data.danos_no_estructurales || '',
+                servicio_electrico: data.servicio_electrico || '',
+                servicio_aguas: data.servicio_aguas || '',
+                servicio_gas: data.servicio_gas || '',
+                decision_final: data.decision_final || '',
+                observaciones: data.observaciones || '',
+                responsable_nombre: data.responsable_nombre,
+                responsable_cedula: data.responsable_cedula,
+                responsable_telefono: data.responsable_telefono,
+                responsable_organismo: data.responsable_organismo
+            };
+
+            // Enviar
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                mostrarToast('✅ Inspección enviada correctamente.', 'success');
+                form.reset();
+                // Resetear coordenadas
+                document.getElementById('latitud').textContent = '-';
+                document.getElementById('longitud').textContent = '-';
+                document.getElementById('altitud').textContent = '-';
+                document.getElementById('precision').textContent = '-';
+                // Resetear checkboxes
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                document.getElementById('enlaceNombre').value = '';
+                document.getElementById('enlaceTelefono').value = '';
+                document.getElementById('enlaceNombre').classList.remove('auto-filled');
+                document.getElementById('enlaceTelefono').classList.remove('auto-filled');
+                // Recalcular decisión (quedará en "Evaluando...")
+                const display = document.getElementById('decision_final_display');
+                display.textContent = '🔄 Evaluando condiciones...';
+                display.className = 'decision-none';
+                document.getElementById('decision_final').value = '';
+                // Recargar selects
+                populateSelect('zodiSelect', geoData, 'ZODI');
+                // Vincular eventos de nuevo
+                vincularEventosDecision();
+            } catch (error) {
+                console.error('Error al enviar:', error);
+                mostrarToast('❌ Error al enviar. Verifique su conexión.', 'danger');
+            }
+        });
+
+        // ================================================================
+        // LIMPIAR FORMULARIO
+        // ================================================================
+        document.getElementById('btnLimpiar').addEventListener('click', function() {
+            if (confirm('¿Limpiar todo el formulario? Los datos no guardados se perderán.')) {
+                document.getElementById('registroForm').reset();
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                document.getElementById('latitud').textContent = '-';
+                document.getElementById('longitud').textContent = '-';
+                document.getElementById('altitud').textContent = '-';
+                document.getElementById('precision').textContent = '-';
+                document.getElementById('enlaceNombre').value = '';
+                document.getElementById('enlaceTelefono').value = '';
+                document.getElementById('enlaceNombre').classList.remove('auto-filled');
+                document.getElementById('enlaceTelefono').classList.remove('auto-filled');
+                const display = document.getElementById('decision_final_display');
+                display.textContent = '🔄 Evaluando condiciones...';
+                display.className = 'decision-none';
+                document.getElementById('decision_final').value = '';
+                mostrarToast('Formulario limpiado.', 'info');
+                // Vincular eventos de nuevo
+                vincularEventosDecision();
+            }
+        });
+
+        // ================================================================
+        // TOAST (mensajes flotantes)
+        // ================================================================
+        function mostrarToast(mensaje, tipo) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className =
+                `toast align-items-center text-white bg-${tipo === 'success' ? 'success' : tipo === 'danger' ? 'danger' : tipo === 'warning' ? 'warning' : 'info'} border-0 show`;
+            toast.role = 'alert';
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${mensaje}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        // ================================================================
+        // INICIALIZACIÓN
+        // ================================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadExcelData();
+            // Vincular eventos después de que los checkboxes estén en el DOM
+            setTimeout(vincularEventosDecision, 1000);
+        });
+    </script>
+
+</body>
+</html>
